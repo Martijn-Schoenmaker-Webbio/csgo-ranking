@@ -1,0 +1,82 @@
+matches = [
+  {
+    "teamA": {
+      "win": true,
+      "players": {
+        "Joeri": {
+          "finalKill": "bot",
+          "topPlayer": true
+        },
+        "Arjan": {
+          "finalKill": false,
+          "topPlayer": false
+        },
+        "Koen": {
+          "finalKill": false,
+          "topPlayer": false
+        }
+      }
+    },
+    "teamB": {
+      "win": false,
+      "players": {
+        "Martijn": {
+          "finalKill": false,
+          "topPlayer": false
+        },
+        "Tom": {
+          "finalKill": false,
+          "topPlayer": false
+        },
+        "Jordy": {
+          "finalKill": false,
+          "topPlayer": false
+        },
+        "Nick": {
+          "finalKill": false,
+          "topPlayer": false
+        }
+      }
+    }
+  },
+  {
+    "teamA": {
+      "win": false,
+      "players": {
+        "Tom": {
+          "finalKill": false,
+          "topPlayer": false
+        },
+        "Nick": {
+          "finalKill": false,
+          "topPlayer": false
+        },
+        "Joeri": {
+          "finalKill": false,
+          "topPlayer": false
+        },
+        "Jordy": {
+          "finalKill": false,
+          "topPlayer": false
+        }
+      }
+    },
+    "teamB": {
+      "win": true,
+      "players": {
+        "Martijn": {
+          "finalKill": false,
+          "topPlayer": true
+        },
+        "Arjan": {
+          "finalKill": "bot",
+          "topPlayer": false
+        },
+        "Koen": {
+          "finalKill": false,
+          "topPlayer": false
+        }
+      }
+    }
+  },
+]
