@@ -32,10 +32,10 @@ $(document).ready(function() {
         //var rank = calculateRank(player, finalKill, topPlayer, win);
         titleDiv += `   <tr>
                           <td class="rank">0</td>
-                          <td>${player}</td>
-                          <td>${finalKill}</td>
-                          <td>${topPlayer}</td>
-                          <td class="new-rank table-${tableId} team-${match}">1</td>
+                          <td class="name">${player}</td>
+                          <td class="finalKill">${finalKill}</td>
+                          <td class="topPlayer">${topPlayer}</td>
+                          <td class="new-rank table-${tableId} team-${match} ${player}-${match}-${teamId}">1</td>
                         </tr>`;
       }
       titleDiv += tableEnd;
@@ -46,6 +46,7 @@ $(document).ready(function() {
     titleDiv += `</div>`;
   }
   $(".teams").append(titleDiv);
+  calculateRank();
 });
 
 function oldRanks(tableId, teamId) {
@@ -56,26 +57,47 @@ function oldRanks(tableId, teamId) {
 };
 
 function calculateRank() {
-  // var td = $("td.rank");
-  // console.log(td.length);
-  // for (var i = 0; i < td.length; i++) {
-  //
-  //   // td[i];
-  //   console.log([i]);
-  // }
+  var stats = [];
+  //Find all Matches
   var matches = $("div.match");
   for (var i = 0; i < matches.length; i++) {
+
+    //Find all Tables (teams)
     var countTables = $("div.match-" + i + " table").length;
     for (var j = 0; j < countTables; j++) {
-      var countTd = $("div.match-" + i + " table.team-" + j + " td.new-rank").length;
-      var teamScore = 0;
-      for (var k = 0; k < countTd; k++) {
-        var tdAmount = $("div.match-" + i + " table.team-" + j + " td.new-rank")[k].innerHTML;
-        teamScore = teamScore + parseInt(tdAmount);
+      var winning = false;
+      var thisTable = $("div.match-" + i + " table.team-" + j).hasClass("winning-team");
+      if (thisTable) {
+        winning = true;
+      } else {
+        winning = false;
       }
-      console.log(teamScore);
+      var countTd = $("div.match-" + i + " table.team-" + j + " td.rank").length;
+      // var teamScore = 0;
+
+      //Find all Players per Team
+      for (var k = 0; k < countTd; k++) {
+        var stat = {};
+        var rank = parseInt($("div.match-" + i + " table.team-" + j + " td.rank")[k].innerHTML);
+        var playerName = $("div.match-" + i + " table.team-" + j + " td.name")[k].innerHTML;
+        var finalKill = $("div.match-" + i + " table.team-" + j + " td.finalKill")[k].innerHTML;
+        var topPlayer = $("div.match-" + i + " table.team-" + j + " td.topPlayer")[k].innerHTML;
+        // var tdAmount = $("div.match-" + i + " table.team-" + j + " td.rank")[k].innerHTML;
+        // teamScore = teamScore + parseInt(tdAmount);
+        stats.push({rank: rank, playerName: playerName, finalKill: finalKill, topPlayer: topPlayer, match: i, team: j, winningTeam: winning, newRank: 0});
+      }
+      // console.log(teamScore);
     }
 
+  }
+  console.log(stats);
+  for (var l = 0; l < stats.length; l++) {
+    var newRank = stats[l].rank;
+    if (stats[l].finalKill == "bot") {
+      newRank = newRank + 2;
+      console.log($("div.match-" + stats[l].match + " table.team-" + stats[l].team + " td.new-rank." +stats[l].playerName + "-" + stats[l].match + "-" + stats[l].team).html(newRank));
+      stats[l].newRank = newRank;
+    }
   }
   // return 0;
   // var points;

@@ -1,6 +1,6 @@
 matches = [
   {
-    "teamA": {
+    "team-0": {
       "win": true,
       "players": {
         "Joeri": {
@@ -17,7 +17,7 @@ matches = [
         }
       }
     },
-    "teamB": {
+    "team-1": {
       "win": false,
       "players": {
         "Martijn": {
@@ -40,7 +40,7 @@ matches = [
     }
   },
   {
-    "teamA": {
+    "team-0": {
       "win": false,
       "players": {
         "Tom": {
@@ -61,7 +61,7 @@ matches = [
         }
       }
     },
-    "teamB": {
+    "team-1": {
       "win": true,
       "players": {
         "Martijn": {
