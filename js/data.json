@@ -45,7 +45,7 @@ matches = [
       "players": {
         "Tom": {
           "finalKill": false,
-          "topPlayer": false
+          "topPlayer": true
         },
         "Nick": {
           "finalKill": false,

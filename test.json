@@ -1,0 +1,27 @@
+matches = [
+  {
+    "finalKill" : 1,
+    "win": 0,
+      "players": [
+        [{
+          "id": 1,
+          "name": "Joeri",
+          "oldRank": 0,
+          "newRank": 0
+        },
+        {
+
+        }],
+        [{
+          "id": 1,
+          "name": "Joeri",
+        },
+        {
+
+        }],
+
+      ]
+  },
+  {
+
+  }];

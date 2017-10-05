@@ -31,7 +31,7 @@ $(document).ready(function() {
         // console.log("previousRanks: " + previousRanks);
         //var rank = calculateRank(player, finalKill, topPlayer, win);
         titleDiv += `   <tr>
-                          <td class="rank">1</td>
+                          <td class="rank ${player}-${match}-${teamId}">1</td>
                           <td class="name">${player}</td>
                           <td class="finalKill">${finalKill}</td>
                           <td class="topPlayer">${topPlayer}</td>
@@ -46,7 +46,7 @@ $(document).ready(function() {
     titleDiv += `</div>`;
   }
   $(".teams").append(titleDiv);
-  calculateRank();
+  createObject();
 });
 
 // function oldRanks(tableId, teamId) {
@@ -56,7 +56,7 @@ $(document).ready(function() {
 //   return test2;
 // };
 
-function calculateRank() {
+function createObject() {
   var stats = [];
   //var teams = [];
   //Find all Matches
@@ -102,109 +102,119 @@ function calculateRank() {
       teamArray.push(0);
     }
     matchArray.push(teamArray);
-    console.log(matchArray);
   }
 
-  //Push teamRanks
-  var max = 0;
-  var min = 0;
+  calculateRank();
 
-  for (var i = 0; i < matches.length; i++) {
-    for (var m = 0; m < stats.length; m++) {
-      if (stats[m].match === i) {
-        var oldRank = parseInt(matchArray[stats[m].match][stats[m].team]);
-        var newRank = oldRank + parseInt(stats[m].rank);
-        matchArray[stats[m].match][stats[m].team] = newRank;
+  function calculateRank() {
+    //Push teamRanks
+    var max = 0;
+    var min = 0;
 
+    var joeriStat = 1;
+
+    //Iterate over all the matches
+    for (var i = 0; i < matches.length; i++) {
+
+      //Log the Match number
+      console.log("========== Match: " + [i] + " ==========");
+
+      //For all the players, calculate the total ranks
+      for (var m = 0; m < stats.length; m++) {
+
+        //Calculate the highest and lowest ranks
         if (stats[m].rank > max) {
           max = stats[m].rank;
         } else if (stats[m].rank < min) {
           min = stats[m].rank;
         }
+
       }
-    }
-    for (var m = 0; m < stats.length; m++) {
-      var points = 0;
-      if (stats[m].match === i) {
-        var percentage = (stats[m].rank - min) / (max - min) * 100;
-        console.log(stats[m].finalKill);
-        if (stats[m].finalKill !== "false") {
-          // console.log("jee");
+      for (var m = 0; m < stats.length; m++) {
+        var points = 0;
+        var oldRank, newRank;
+        if (stats[m].match === i) {
+          console.log(joeriStat);
+          if (stats[m].playerName == "Joeri") {
+            console.log("true");
+            $("div.match-" + i + " table.team-" + stats[m].team + " td.rank." + stats[m].playerName + "-" + stats[m].match + "-" + stats[m].team).text(joeriStat);
+          }
+
+          //Determine current team and enemy team number
+          var friendlyTeam = stats[m].team;
+          var enemyTeam = 0;
+          if (stats[m].team == "0") {
+            enemyTeam = 1;
+          } else {
+            enemyTeam = 0;
+          }
+
+          //Set var percentagePoints (how many points a Player can get based on their rank)
+          var percentagePoints = 1;
+
+          //Calculate the percentagePoints
+          var percentage = (stats[m].rank - min) / (max - min) * 100;
+
+          //Determine the range
           if (percentage >= 0 && percentage <= 25 ) {
-            points = points + 4;
-            console.log("rank-1");
+            percentagePoints = 4;
           }
           if (percentage > 25 && percentage <= 50 ) {
-            points = points + 3;
-            console.log("rank-2");
+            percentagePoints = 3;
           }
           if (percentage > 50 && percentage <= 75 ) {
-            points = points + 2;
-            console.log("rank-3");
+            percentagePoints = 2;
           }
           if (percentage > 75 && percentage <= 100 ) {
-            points = points + 1;
-            console.log("rank-4");
+            percentagePoints = 1;
           }
-          if (stats[m].finalKill == "bot") {
-            points--;
+
+          //Check if the player is in the winning team
+          if (stats[m].winningTeam == true) {
+            points = points + 2;
           }
+
+          //Check if the player is the topPlayer
           if (stats[m].topPlayer == "true") {
-            if (percentage >= 0 && percentage <= 25 ) {
-              points = points + 4;
-              console.log("rank-1");
-            }
-            if (percentage > 25 && percentage <= 50 ) {
-              points = points + 3;
-              console.log("rank-2");
-            }
-            if (percentage > 50 && percentage <= 75 ) {
-              points = points + 2;
-              console.log("rank-3");
-            }
-            if (percentage > 75 && percentage <= 100 ) {
-              points = points + 1;
-              console.log("rank-4");
-            }
+            points = points + percentagePoints;
           }
 
-        }
+          //Check if the player has another player as finalKill
+          if (stats[m].finalKill == "player") {
+            points = points + percentagePoints;
+          }
 
-        if (stats[m].winningTeam !== "winning-team") {
-          points = points + 2;
-        }
-        console.log(points);
+          //Check if the player has a bot as finalKill
+          if (stats[m].finalKill == "bot") {
+            points = points + percentagePoints - 1;
+          }
 
-        // console.log(percentage);
-        //Points based on: (Current rank points - lowest rank points) / (highest rank points - lowest rank points) * 100. See scheme in what range the percentage falls.
-        //(x < 10 && y > 1) is true
+          // console.log("Enemy team points: " + matchArray[stats[m].match][enemyTeam]);
+
+          points = stats[m].rank + points;
+
+          stats[m].newRank = points;
+          stats[m].rank = points;
+
+          if (stats[m].playerName === "Joeri") {
+            joeriStat = joeriStat + points;
+            stats[m].newRank = joeriStat;
+            stats[m].rank = joeriStat;
+            points = joeriStat;
+          }
+
+          $("div.match-" + i + " table.team-" + stats[m].match + " td.new-rank." + stats[m].playerName + "-" + stats[m].match + "-" + stats[m].team).text(points);
+
+
+          oldRank = parseInt(matchArray[stats[m].match][stats[m].team]);
+          newRank = oldRank + points;
+          matchArray[stats[m].match][stats[m].team] = newRank;
+
+          //Log the player and their points
+          console.log(stats[m].playerName + ": " + points);
+          // console.log(matchArray);
+        }
       }
-    }
-    // console.log("Match " + i + ":" + max + " " + min);
-  }
-
-  //Calculate points per player
-  for (var m = 0; m < stats.length; m++) {
-    if (stats[m].finalKill == "bot") {
-      // caculatePoints(matchArray[stats[m].match][stats[m].team]);
-    } else if (stats[m].finalKill == "player") {
-
-    } else {
-
-    }
-  }
-
-  for (var l = 0; l < stats.length; l++) {
-    var newRank = stats[l].rank;
-
-    if (stats[l].finalKill == "bot") {
-      newRank = newRank + 2;
-      // console.log($("div.match-" + stats[l].match + " table.team-" + stats[l].team + " td.new-rank." +stats[l].playerName + "-" + stats[l].match + "-" + stats[l].team).html(newRank));
-      stats[l].newRank = newRank;
     }
   }
 };
-
-// function calculatePoints(enemyRanking) {
-//
-// }
