@@ -1,0 +1,37 @@
+players = [
+  {
+    "id": 1,
+    "name": "Joeri",
+    "rank": 14
+  },
+  {
+    "id": 2,
+    "name": "Koen",
+    "rank": 10
+  },
+  {
+    "id": 3,
+    "name": "Jordy",
+    "rank": 12
+  },
+  {
+    "id": 4,
+    "name": "Arjan",
+    "rank": 15
+  },
+  {
+    "id": 5,
+    "name": "Martijn",
+    "rank": 12
+  },
+  {
+    "id": 6,
+    "name": "Tom",
+    "rank": 10
+  },
+  {
+    "id": 7,
+    "name": "Nick",
+    "rank": 9
+  }
+];

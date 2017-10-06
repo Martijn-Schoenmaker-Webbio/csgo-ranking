@@ -2,74 +2,163 @@ $(document).ready(function() {
   calculateRanks();
 
   function calculateRanks() {
-    var isFirstTeam = true;
+    var char = ['A','B','C','D','E','F'];
+    var contentDiv = ``;
+    var tableEnd = `</tbody></table>`;
+
     //Iterate through all matches
     for (var i = 0; i < matches.length; i++) {
-      var table = ``;
+      console.log(`================ Match ${i+1} ================`);
+      var divTitle = `<h4>Match ${i+1}</h4>`;
 
-      if (i > 0) {
-        isFirstTeam = false;
-      }
+      contentDiv += divTitle;
 
       //Create a var to store all ranks
-      var allRanks = 0;
       var minRank = 0;
       var maxRank = 0;
 
       //Store array of teams in var allTeams
       var allTeams = matches[i].players;
 
-      calculateMinMax(isFirstTeam, inRank, maxRank, allTeams, function(minRank, maxRank) {
+      calculateMinMax(minRank, maxRank, allTeams, function(minRank, maxRank, teamScores) {
+        var weakTeamPoints = 0;
+        var strongTeamSubtract = 0;
 
         //Iterate through all teams
         for (var j = 0; j < allTeams.length; j++) {
 
+          var winningTeam = '';
+          if (matches[i].win === j) {
+            winningTeam = " - win";
+            winningTeamPoints = teamScores[j];
+          }
+
+          teamScores.sort((a, b) => {
+            return a - b;
+          });
+
+          var minTeam = teamScores[0];
+          var maxTeam = teamScores[1];
+
+          for (var u = 0; u < teamScores.length; u++) {
+            console.log("JFDKL" + teamScores[u]);
+            if (winningTeamPoints === minTeam) {
+              weakTeamPoints = Math.floor(maxTeam / minTeam);
+              console.log("team is min: " + weakTeamPoints);
+            } else if (winningTeamPoints === maxTeam){
+              weakTeamPoints = -(Math.floor(maxTeam / minTeam));
+              console.log("team is max: " + weakTeamPoints);
+            }
+          }
+          console.log("jaja" + weakTeamPoints);
+
+
+          var tableStart = `<h5>Team ${char[j]} ${winningTeam}</h5><table class='u-full-width'><thead><tr><th>Rank (${teamScores[j]})</th><th>Name</th><th>Final Kill</th><th>Top Player</th><th>New Rank</th><th>Growth</th></tr></thead><tbody>`;
+          contentDiv += tableStart;
+
           //Store array of players per team in var allPlayers
           var allPlayers = allTeams[j];
 
+          var playerRow = ``;
+
+          var playerRows = [];
+
           //Iterate through all players
           for (var k = 0; k < allPlayers.length; k++) {
+
             //Temp store the current player in player var
             var player = allPlayers[k];
 
-            //Temp store the oldRank in the oldRank variable
-            var oldRank = player.newRank;
+            //Get the current rank of the player in the players array
+            for (var y = 0; y < players.length; y++) {
 
-            var newRank = oldRank;
+              //If the player ID in the matches array is the same as the one in the players array
+              if (player.id === players[y].id) {
 
-            calculatePercentage(minRank, maxRank, oldRank, function(percentagePoints){
-              if (matches[i].win === j) {
-                newRank = newRank + 2;
+                //Set the currentRank
+                var currentRank = players[y].rank;
+
               }
+            }
 
-              if (matches[i].finalKill == player.id) {
-                newRank = newRank + percentagePoints;
-                if (matches[i].isBot === true) {
-                  newRank--;
+            var newRank = currentRank;
+            //Fire the function to calculate the range of percentage the player is in.
+            calculatePercentage(minRank, maxRank, currentRank, function(percentagePoints){
+              var finalKillType = "-";
+              var topPlayer = "-";
+              if (matches[i].win === j) {
+                if (true) {
+
                 }
+                console.log("Winning Team gets: " + weakTeamPoints);
+                var defaultWin = 2;
+                var winPoints = defaultWin + (Math.floor(percentagePoints/4)) + weakTeamPoints;
+                console.log("winpoints: " + winPoints);
+                var finalKillPoints = 0;
+                var topPlayerPoints = 0;
+
+                if (matches[i].finalKill == player.id) {
+                  finalKillType = "Player";
+                  finalKillPoints = percentagePoints;
+                  if (matches[i].isBot === true) {
+                    finalKillType = "Bot";
+                    finalKillPoints--;
+                  }
+                }
+
+                if (matches[i].topPlayer == player.id) {
+                  topPlayer = "True";
+                  topPlayerPoints = percentagePoints;
+                }
+                newRank = currentRank + winPoints + finalKillPoints + topPlayerPoints;
               }
 
               player.newRank = newRank;
 
-              console.log("Player: " + player.name + " oldRank: " + oldRank + " newRank: " + newRank);
-            });
+              for (var y = 0; y < players.length; y++) {
+                if (player.id === players[y].id) {
+                  players[y].rank = newRank;
+                }
+              }
 
-            //Add the current rank of the player to the allRanks variable
-            allRanks = allRanks + allPlayers[k].oldRank;
+              playerRow = {
+                sort: currentRank,
+                html:`<tr>
+                        <td class="rank">${currentRank}</td>
+                        <td class="name">${player.name}</td>
+                        <td class="finalKill">${finalKillType}</td>
+                        <td class="topPlayer">${topPlayer}</td>
+                        <td class="new-rank">${newRank}</td>
+                        <td class="growth">+${newRank - currentRank}</td>
+                      </tr>`};
+
+              if (matches[i].win === j) {
+                console.log("Win: " + player.name + ", oldRank: " + currentRank + ", winPoints: " + winPoints + ", weakTeamPoints: " + weakTeamPoints + ", percentagePoints: " + percentagePoints + ", finalKillPoints: " + finalKillPoints + ", topPlayerPoints: " + topPlayerPoints + ", newRank: " + newRank + ", growth: " + (newRank - currentRank));
+              } else {
+                console.log("Lost: " + player.name + ", Rank: " + newRank);
+              }
+            });
+            playerRows.push(playerRow);
           };
+          playerRows.sort((a, b) => {
+            return b.sort - a.sort;
+          });
+          for (var q = 0; q < playerRows.length; q++) {
+            contentDiv += playerRows[q].html;
+          }
+         contentDiv += tableEnd;
         };
       });
-      // console.log(allRanks);
-      // console.log(minRank, maxRank);
     };
+    $('.teams').append(contentDiv);
   };
 
-  function calculatePercentage(min, max, rank, callback) {
+  function calculatePercentage(min, max, currentRank, callback) {
     //Set var percentagePoints (how many points a Player can get based on their rank)
     var percentagePoints = 1;
 
     //Calculate the percentagePoints
-    var percentage = (rank - min) / (max - min) * 100;
+    var percentage = (currentRank - min) / (max - min) * 100;
 
     //Determine the range
     if (percentage >= 0 && percentage <= 25 ) {
@@ -85,38 +174,65 @@ $(document).ready(function() {
       percentagePoints = 1;
     }
 
+    //Pass the variable percentagePoints in the callback
     callback(percentagePoints);
   }
 
-  function calculateMinMax(isFirstTeam, minRank, maxRank, allTeams, callback) {
-    //Iterate through all teams
-    for (var j = 0; j < allTeams.length; j++) {
+  function calculateMinMax(minRank, maxRank, allTeams, callback) {
+
+    var teamRanks = [];
+    //Iterate through the players array
+    for (var i = 0; i < players.length; i++) {
+      var teamRank = {playerId: 0, playerRank: "foe"};
+
+      //Set the playerId
+      var playerId = players[i].id;
+
+      //Set the currentRank to the rank of the player in the players array
+      var currentRank = players[i].rank;
+
+      //Make sure minRank doesn't stay at 0
+      if (i === 0) {
+        minRank = currentRank;
+      };
+
+      //If the player's rank is the highest or lowest uptill now, make it the new value
+      if (currentRank < minRank) {
+        minRank = currentRank;
+      } else if (currentRank > maxRank) {
+        maxRank = currentRank;
+      };
+
+
+      teamRank.playerId = playerId;
+      teamRank.playerRank = currentRank;
+      teamRanks.push(teamRank);
+
+    }
+
+    var teamScores = [];
+
+    for (var t = 0; t < allTeams.length; t++) {
+
+      var teamScore = 0;
 
       //Store array of players per team in var allPlayers
-      var allPlayers = allTeams[j];
+      var allPlayers = allTeams[t];
+
+      //Iterate through all players
       for (var k = 0; k < allPlayers.length; k++) {
-        console.log(allPlayers.length);
 
-        //Temp store the oldRank in the oldRank variable
-        if (isFirstTeam === false) {
-          //oldRank = match[i-1]. // pak de newRank van de vorige iteratie
+        //Temp store the current player in player var
+        var player = allPlayers[k];
+
+        for (var r = 0; r < teamRanks.length; r++) {
+          if (teamRanks[r].playerId === player.id) {
+            teamScore = teamScore + teamRanks[r].playerRank;
+          }
         }
-        var oldRank = allPlayers[k].oldRank;
-
-        //Make sure minRank doesn't stay at 0
-        if (k === 0) {
-          minRank = oldRank;
-        };
-
-        //If the player's rank is the highest or lowest uptill now, make it the new value
-        if (oldRank < minRank) {
-          minRank = oldRank;
-        } else if (oldRank > maxRank) {
-          maxRank = oldRank;
-        };
-      };
-    };
-    console.log("in de callback:" + minRank + "max: " + maxRank);
-    callback(minRank, maxRank);
+      }
+      teamScores.push(teamScore);
+    }
+    callback(minRank, maxRank, teamScores);
   };
 });

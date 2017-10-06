@@ -1,0 +1,166 @@
+matches = [
+  {
+    "win": 0,
+    "finalKill" : 1,
+    "isBot": true,
+    "topPlayer": 1,
+    "players":
+    [
+      [
+        {
+          "id": 1,
+          "name": "Joeri"
+        },
+        {
+          "id": 2,
+          "name": "Koen"
+        },
+        {
+          "id": 3,
+          "name": "Jordy"
+        }
+      ],
+      [
+        {
+          "id": 4,
+          "name": "Arjan"
+        },
+        {
+          "id": 5,
+          "name": "Martijn"
+        },
+        {
+          "id": 6,
+          "name": "Tom"
+        },
+        {
+          "id": 7,
+          "name": "Nick"
+        }
+      ]
+    ]
+  },
+  {
+    "win": 1,
+    "finalKill" : 5,
+    "isBot": false,
+    "topPlayer": 5,
+    "players":
+    [
+      [
+        {
+          "id": 1,
+          "name": "Joeri"
+        },
+        {
+          "id": 2,
+          "name": "Koen"
+        },
+        {
+          "id": 3,
+          "name": "Jordy"
+        }
+      ],
+      [
+        {
+          "id": 4,
+          "name": "Arjan"
+        },
+        {
+          "id": 5,
+          "name": "Martijn"
+        },
+        {
+          "id": 6,
+          "name": "Tom"
+        },
+        {
+          "id": 7,
+          "name": "Nick"
+        }
+      ]
+    ]
+  },
+  {
+    "win": 1,
+    "finalKill" : 7,
+    "isBot": true,
+    "topPlayer": 7,
+    "players":
+    [
+      [
+        {
+          "id": 6,
+          "name": "Tom"
+        },
+        {
+          "id": 2,
+          "name": "Koen"
+        },
+        {
+          "id": 3,
+          "name": "Jordy"
+        },
+        {
+          "id": 4,
+          "name": "Arjan"
+        }
+      ],
+      [
+        {
+          "id": 5,
+          "name": "Martijn"
+        },
+        {
+          "id": 1,
+          "name": "Joeri"
+        },
+        {
+          "id": 7,
+          "name": "Nick"
+        }
+      ]
+    ]
+  },
+  {
+    "win": 0,
+    "finalKill" : 6,
+    "isBot": true,
+    "topPlayer": 6,
+    "players":
+    [
+      [
+        {
+          "id": 1,
+          "name": "Joeri"
+        },
+        {
+          "id": 5,
+          "name": "Martijn"
+        },
+        {
+          "id": 6,
+          "name": "Tom"
+        },
+        {
+          "id": 7,
+          "name": "Nick"
+        }
+      ],
+      [
+        {
+          "id": 2,
+          "name": "Koen"
+        },
+        {
+          "id": 3,
+          "name": "Jordy"
+        },
+        {
+          "id": 4,
+          "name": "Arjan"
+        }
+      ]
+    ]
+  }
+];
