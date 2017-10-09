@@ -41,10 +41,17 @@ $(document).ready(function() {
             var minTeam = teamScores[0];
             var maxTeam = teamScores[1];
 
+            var calc = maxTeam / minTeam - 1;
+
             if (teamPoints === minTeam) {
-              weakTeamPoints = Math.floor(maxTeam / minTeam);
+              weakTeamPoints = (Math.ceil(calc));
             } else if (teamPoints === maxTeam){
-              weakTeamPoints = -(Math.floor(maxTeam / minTeam));
+              if (calc > 0.25) {
+                weakTeamPoints = -(Math.ceil(calc));
+              } else {
+                weakTeamPoints = -(Math.round(calc));
+              }
+
             }
 
           } else {
