@@ -13,7 +13,7 @@ $(document).ready(function() {
 
       contentDiv += divTitle;
 
-      //Create a var to store all ranks
+      //Create a var to store min and max ranks
       var minRank = 0;
       var maxRank = 0;
 
@@ -21,39 +21,37 @@ $(document).ready(function() {
       var allTeams = matches[i].players;
 
       calculateMinMax(minRank, maxRank, allTeams, function(minRank, maxRank, teamScores) {
-        var weakTeamPoints = 0;
-        var strongTeamSubtract = 0;
-
+        var teamScoresOriginal = teamScores.slice();
         //Iterate through all teams
         for (var j = 0; j < allTeams.length; j++) {
-
+          var weakTeamPoints = 0;
+          var winningTeamPoints;
           var winningTeam = '';
+          teamPoints = teamScoresOriginal[j];
           if (matches[i].win === j) {
             winningTeam = " - win";
-            winningTeamPoints = teamScores[j];
+          } else {
           }
 
-          teamScores.sort((a, b) => {
-            return a - b;
-          });
+          if (teamScores[0] !== teamScores[1]) {
+            teamScores.sort((a, b) => {
+              return a - b;
+            });
 
-          var minTeam = teamScores[0];
-          var maxTeam = teamScores[1];
+            var minTeam = teamScores[0];
+            var maxTeam = teamScores[1];
 
-          for (var u = 0; u < teamScores.length; u++) {
-            console.log("JFDKL" + teamScores[u]);
-            if (winningTeamPoints === minTeam) {
+            if (teamPoints === minTeam) {
               weakTeamPoints = Math.floor(maxTeam / minTeam);
-              console.log("team is min: " + weakTeamPoints);
-            } else if (winningTeamPoints === maxTeam){
+            } else if (teamPoints === maxTeam){
               weakTeamPoints = -(Math.floor(maxTeam / minTeam));
-              console.log("team is max: " + weakTeamPoints);
             }
+
+          } else {
+            console.log("-------------------------DRAW");
+            weakTeamPoints = 0;
           }
-          console.log("jaja" + weakTeamPoints);
-
-
-          var tableStart = `<h5>Team ${char[j]} ${winningTeam}</h5><table class='u-full-width'><thead><tr><th>Rank (${teamScores[j]})</th><th>Name</th><th>Final Kill</th><th>Top Player</th><th>New Rank</th><th>Growth</th></tr></thead><tbody>`;
+          var tableStart = `<h5>Team ${char[j]} ${winningTeam}</h5><table class='u-full-width'><thead><tr><th>Rank (${teamScoresOriginal[j]})</th><th>Name</th><th>Win</th><th>Percentage</th><th>Final Kill</th><th>Top Player</th><th>Weak Team Points</th><th>New Rank</th><th>Growth</th></tr></thead><tbody>`;
           contentDiv += tableStart;
 
           //Store array of players per team in var allPlayers
@@ -84,18 +82,14 @@ $(document).ready(function() {
             var newRank = currentRank;
             //Fire the function to calculate the range of percentage the player is in.
             calculatePercentage(minRank, maxRank, currentRank, function(percentagePoints){
-              var finalKillType = "-";
-              var topPlayer = "-";
-              if (matches[i].win === j) {
-                if (true) {
+              var finalKillPoints = 0;
+              var topPlayerPoints = 0;
 
-                }
+              if (matches[i].win === j) {
                 console.log("Winning Team gets: " + weakTeamPoints);
-                var defaultWin = 2;
-                var winPoints = defaultWin + (Math.floor(percentagePoints/4)) + weakTeamPoints;
+                var defaultWin = 2 + (Math.floor(percentagePoints/4));
+                var winPoints = defaultWin + weakTeamPoints;
                 console.log("winpoints: " + winPoints);
-                var finalKillPoints = 0;
-                var topPlayerPoints = 0;
 
                 if (matches[i].finalKill == player.id) {
                   finalKillType = "Player";
@@ -111,6 +105,19 @@ $(document).ready(function() {
                   topPlayerPoints = percentagePoints;
                 }
                 newRank = currentRank + winPoints + finalKillPoints + topPlayerPoints;
+              } else {
+                console.log("lost but better:" + weakTeamPoints);
+                var defaultWin = 0;
+                if (weakTeamPoints < 0) {
+                  var lostTeamPoints = weakTeamPoints;
+                  newRank = currentRank + lostTeamPoints;
+                  console.log(currentRank);
+                  console.log(lostTeamPoints);
+                  console.log(newRank);
+                } else {
+                  weakTeamPoints = 0;
+                  newRank = currentRank;
+                }
               }
 
               player.newRank = newRank;
@@ -126,10 +133,13 @@ $(document).ready(function() {
                 html:`<tr>
                         <td class="rank">${currentRank}</td>
                         <td class="name">${player.name}</td>
-                        <td class="finalKill">${finalKillType}</td>
-                        <td class="topPlayer">${topPlayer}</td>
+                        <td class="winpoints">${defaultWin}</td>
+                        <td class="percentagePoints">${percentagePoints}</td>
+                        <td class="finalKill">${finalKillPoints}</td>
+                        <td class="topPlayer">${topPlayerPoints}</td>
+                        <td class="weakTeamPoints">${weakTeamPoints}</td>
                         <td class="new-rank">${newRank}</td>
-                        <td class="growth">+${newRank - currentRank}</td>
+                        <td class="growth">${newRank - currentRank}</td>
                       </tr>`};
 
               if (matches[i].win === j) {
@@ -183,7 +193,7 @@ $(document).ready(function() {
     var teamRanks = [];
     //Iterate through the players array
     for (var i = 0; i < players.length; i++) {
-      var teamRank = {playerId: 0, playerRank: "foe"};
+      var teamRank = {playerId: 0, playerRank: 0};
 
       //Set the playerId
       var playerId = players[i].id;
@@ -203,12 +213,12 @@ $(document).ready(function() {
         maxRank = currentRank;
       };
 
-
       teamRank.playerId = playerId;
       teamRank.playerRank = currentRank;
       teamRanks.push(teamRank);
 
     }
+    console.log(teamRanks);
 
     var teamScores = [];
 
@@ -228,6 +238,7 @@ $(document).ready(function() {
         for (var r = 0; r < teamRanks.length; r++) {
           if (teamRanks[r].playerId === player.id) {
             teamScore = teamScore + teamRanks[r].playerRank;
+            console.log(teamScore);
           }
         }
       }

@@ -123,10 +123,10 @@ matches = [
     ]
   },
   {
-    "win": 0,
-    "finalKill" : 6,
+    "win": 1,
+    "finalKill" : 4,
     "isBot": true,
-    "topPlayer": 6,
+    "topPlayer": 4,
     "players":
     [
       [
